@@ -142,22 +142,34 @@ logdir = 'logs'
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
 # Callback to find optimal threshold during training
+# Define a custom callback class named FindOptimalThreshold, inheriting from tf.keras.callbacks.Callback.
 class FindOptimalThreshold(tf.keras.callbacks.Callback):
+    # Define a method that triggers at the end of each epoch during training.
     def on_epoch_end(self, epoch, logs=None):
+        # Predict probabilities of positive class for the test dataset using the model.
         y_pred = self.model.predict(X_test_scaled)
+
+        # Compute the Receiver Operating Characteristic (ROC) curve.
         fpr, tpr, thresholds = roc_curve(y_test, y_pred)
+
+        # Find the threshold where False Positive Rate (FPR) is closest to (1 - True Positive Rate) for Equal Error Rate (EER).
         eer_index = np.argmin(np.abs(fpr - (1 - tpr)))  # EER index
-        eer_threshold = thresholds[eer_index]
+        eer_threshold = thresholds[eer_index]  # Threshold corresponding to EER
+
+        # Print the Equal Error Rate (EER) Threshold.
         print("\nEqual Error Rate (EER) Threshold:", eer_threshold)
 
-        # Adjust threshold for classification
+        # Adjust predictions using the EER threshold to classify as positive or negative.
         y_pred_binary = (y_pred > eer_threshold).astype(int)
 
-        # Evaluate F1 score
+        # Evaluate the F1 score, which balances precision and recall.
         f1 = f1_score(y_test, y_pred_binary)
+        # Print the F1 score.
         print("F1 Score:", f1)
 
+# Instantiate the FindOptimalThreshold callback.
 find_threshold_callback = FindOptimalThreshold()
+
 
 # Train the model with threshold optimization callback
 
