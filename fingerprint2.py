@@ -222,6 +222,39 @@ eer_threshold = thresholds[eer_index]
 eer = (fmr[eer_index] + fnmr[eer_index]) / 2
 print("Equal Error Rate (EER):", eer)
 
+# EER Plot
+
+
+# # Example data for FMR and FNMR
+# sensitivity = np.linspace(0, 1, 100)
+# FMR = 1 - sensitivity  # Decreasing line
+# FNMR = sensitivity  # Increasing line
+
+# Calculate EER
+eer_index = np.argmin(np.abs(fmr - fnmr))
+eer = (fmr[eer_index] + fnmr[eer_index]) / 2
+
+# Plot the FMR and FNMR curves
+plt.figure(figsize=(10, 6))
+plt.plot(tpr, fmr, label='FAR (False Accept Rate)', color='blue')
+plt.plot(tpr, fnmr, label='FRR (False Reject Rate)', color='red')
+
+# Highlight the EER point
+plt.plot(tpr[eer_index], eer, 'ro')  # Red dot at the EER point
+plt.text(tpr[eer_index], eer, f'EER\n({eer:.2f})', ha='right', va='bottom', color='red')
+
+# Labels and title
+plt.xlabel('Sensitivity / Level of Security')
+plt.ylabel('Percentage of times a false reject (FRR) and false accept (FAR)')
+plt.title('EER Graph')
+plt.legend(loc='upper right')
+
+# Show grid for better readability
+plt.grid(True)
+
+# Show the plot
+plt.show()
+
 """# 9. Test"""
 
 img = cv2.imread('314.jpg')
